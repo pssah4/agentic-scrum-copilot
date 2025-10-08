@@ -1,0 +1,6 @@
+# .gitkeep
+
+Dieser Ordner wird für die Agent-Task-Queue genutzt.
+MCP Server schreibt Tasks hier hin, die von Sub-Agenten verarbeitet werden.
+
+Format: `{agent}-{timestamp}.json`

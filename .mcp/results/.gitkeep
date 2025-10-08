@@ -1,0 +1,6 @@
+# .gitkeep
+
+Dieser Ordner wird für die Agent-Results genutzt.
+Sub-Agenten schreiben ihre Ergebnisse hier hin.
+
+Format: `{agent}-{timestamp}.json`
