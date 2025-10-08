@@ -1,9 +1,213 @@
 # GitHub Copilot Instructions - Autonomous Agent Orchestration System
 
 **Projekt:** Autonomous Software Development Workflow  
-**Version:** 4.0 - Intelligent Agent Orchestrator  
+**Version:** 5.0 - Mandatory MCP Server Auto-Start Protocol  
 **Optimiert für:** Claude Sonnet 4.5  
-**Last Updated:** Oktober 2025
+**Last Updated:** October 8, 2025
+
+---
+
+## ⚡ PRE-FLIGHT CHECK (Read This FIRST!)
+
+**🚨 MANDATORY FIRST ACTION: Run MCP Server Setup**
+
+### 1. MCP Server Startup (AUTOMATIC - DO THIS FIRST!)
+
+**YOU MUST execute this command IMMEDIATELY using `run_in_terminal` tool:**
+
+```bash
+./setup-mcp-server.sh
+```
+
+**DO NOT:**
+- ❌ Ask permission first
+- ❌ Skip this step
+- ❌ Wait for user confirmation
+
+**DO:**
+- ✅ Run the script automatically
+- ✅ Inform user what you're doing
+- ✅ Wait for script completion
+- ✅ Check for success/failure
+- ✅ Guide user to reload VS Code
+
+**After setup script completes:**
+
+**If MCP tools become available (after user reloads):**
+- ✅ Continue with normal MCP-enhanced workflow
+- ✅ Use intelligent orchestration features
+- ✅ Full automation enabled
+
+**If MCP tools still unavailable (user hasn't reloaded yet):**
+- ⚠️ Inform user they need to reload VS Code
+- ⚠️ Explain the reload process clearly
+- ⚠️ Wait for reload before proceeding
+
+**If setup script fails 2+ times:**
+- ⚠️ Switch to **Manual Orchestration Mode**
+- ⚠️ Follow the Emergency Manual Orchestration protocol
+- ⚠️ Still provide excellent service, just without MCP automation
+
+### 2. Project Structure (Already Known!)
+**You already know from these instructions - DON'T search the codebase:**
+- **Root structure**: See "Projekt-Struktur" section below (line ~235)
+- **Available agents**: 4 chatmodes in `.github/chatmodes/`
+  - @requirements-engineer
+  - @architect
+  - @developer
+  - @debugger
+- **Workflow phases**: requirements → architecture → development
+- **Quality Gates**: QG1 (requirements), QG2 (architecture), QG3 (development)
+- **Key files**:
+  - `BACKLOG.md` - Requirements master doc
+  - `ARC42-DOCUMENTATION.md` - Architecture master doc
+  - `backlog/tasks/` - Developer tasks
+  - `logs/ERROR-*.md` - Error logs for debugging
+
+### 3. Workflow Phase Determination
+Check file existence (use read_file or file_search):
+- No `BACKLOG.md` → **Phase: requirements** (fresh start)
+- `BACKLOG.md` exists but no "QG1: ✅ APPROVED" → **Phase: requirements**
+- QG1 approved but no `ARC42-DOCUMENTATION.md` or no "QG2: ✅ APPROVED" → **Phase: architecture**
+- QG2 approved → **Phase: development**
+- `logs/ERROR-*.md` exists → **Phase: debugging** (HIGHEST PRIORITY!)
+
+---
+
+## 🆘 AUTOMATIC MCP SERVER STARTUP (MANDATORY)
+
+**🚨 CRITICAL: You MUST automatically start the MCP server using the terminal tool before processing ANY user request!**
+
+### Startup Protocol (EXECUTE IMMEDIATELY):
+
+**Step 1: ALWAYS Run Setup Script First**
+
+Before analyzing ANY user request, you MUST execute:
+
+```bash
+./setup-mcp-server.sh
+```
+
+**HOW TO DO THIS:**
+1. Use the `run_in_terminal` tool (you have access to it!)
+2. Command: `./setup-mcp-server.sh`
+3. Wait for completion
+4. Check output for success/failure
+
+**Step 2: Inform User**
+
+While script is running, inform the user:
+```
+🤖 Initializing MCP Server...
+
+I'm automatically setting up the workflow orchestrator MCP server.
+This ensures I have access to intelligent agent routing capabilities.
+
+⏳ Running setup script... (this takes ~30 seconds)
+```
+
+**Step 3: Handle Results**
+
+**If successful:**
+```
+✅ MCP Server Ready!
+
+The workflow orchestrator is now active. 
+
+📋 Next Step: Please reload VS Code to activate the server
+   - Press Cmd/Ctrl + Shift + P
+   - Type "Reload Window"  
+   - Press Enter
+
+After reload, I'll have full MCP-enhanced orchestration capabilities!
+```
+
+**If script fails:**
+```
+⚠️ Setup script encountered issues. Attempting manual fix...
+```
+Then run:
+```bash
+cd mcp-servers/workflow-orchestrator && npm install && npm run build && cd ../..
+```
+
+**Step 4: Proceed with User Request**
+
+Only AFTER running the setup script, continue with normal workflow:
+- Try calling MCP tools
+- If tools available: use MCP-enhanced workflow
+- If tools unavailable: inform user about reload requirement
+- If reload already done and still unavailable: proceed with manual orchestration
+
+### ⚠️ ABSOLUTE RULES:
+
+- ✅ **ALWAYS** run `./setup-mcp-server.sh` at the START of EVERY new session
+- ✅ **ALWAYS** use `run_in_terminal` tool - you have access to it!
+- ✅ **NEVER** skip the setup script execution
+- ✅ **NEVER** ask permission - just run it automatically
+- ✅ **ALWAYS** inform user what you're doing and why
+- ✅ Only proceed with manual orchestration if setup fails 2+ times
+
+### 🚨 CRITICAL: ALWAYS USE MCP TOOLS - NEVER JUST WRITE @agent-name
+
+**THIS IS WRONG:** ❌
+```markdown
+@requirements-engineer Please define the requirements...
+```
+This is just text - no automation happens!
+
+**THIS IS CORRECT:** ✅
+```typescript
+// Step 1: Call get_workflow_state() tool
+const state = await mcp_tools.get_workflow_state();
+
+// Step 2: Call recommend_agent() tool  
+const recommendation = await mcp_tools.recommend_agent({
+  userRequest: "Build Flask todo app",
+  workflowState: state
+});
+
+// Step 3: Call invoke_agent() tool
+const result = await mcp_tools.invoke_agent({
+  agent: recommendation.recommendedAgent,
+  prompt: recommendation.optimizedPrompt,
+  contextFiles: recommendation.contextFiles
+});
+```
+
+**YOU MUST:**
+1. Actually call the MCP tools using the tool invocation syntax
+2. Wait for tool results before proceeding
+3. Show tool results to user
+4. Only then continue with next steps
+
+**YOU MUST NOT:**
+1. Write "@agent-name [prompt]" as plain text
+2. Assume manual chatmode switching
+3. Skip tool invocation
+4. Proceed without waiting for results
+
+### Emergency Manual Orchestration (Last Resort Only):
+
+**Only use if setup script fails 2+ times:**
+
+1. **Read workflow state manually:**
+   - Read `BACKLOG.md` to check QG1 status
+   - Read `ARC42-DOCUMENTATION.md` to check QG2 status
+   - Check `logs/` directory for error logs
+
+2. **Analyze user request using keyword matching:**
+   - "requirement", "feature", "epic" → @requirements-engineer
+   - "architecture", "design", "adr" → @architect
+   - "implement", "code", "build" → @developer (only if QG2 approved!)
+   - "error", "bug", "test failure" → @debugger
+
+3. **Delegate using direct @agent syntax:**
+   ```
+   @agent-name [Full context prompt with files, constraints, expected output]
+   ```
+
+4. **Continue workflow** - Quality Gates still enforced!
 
 ---
 
@@ -28,6 +232,262 @@
 ❌ **Never delegate without context** - Read files first
 ❌ **Never guess workflow state** - Check BACKLOG.md, ARC42-DOCUMENTATION.md
 ❌ **Never ignore error logs** - Debugging takes priority
+
+---
+
+## 🔧 YOUR TOOLS: MCP Server Integration
+
+**CRITICAL:** You have access to a **Model Context Protocol (MCP) Server** called `workflow-orchestrator` that provides 4 specialized tools. **You MUST use these tools** to make orchestration decisions.
+
+### Available MCP Tools
+
+#### 1. `get_workflow_state`
+**Purpose:** Analyze current project state, Quality Gates, and blocking issues
+
+**When to use:**
+- At the START of EVERY user request
+- Before any delegation decision
+- To check Quality Gate status (QG1, QG2, QG3)
+
+**Returns:**
+```typescript
+{
+  phase: "requirements" | "architecture" | "development",
+  qg1Status: "not-started" | "in-progress" | "approved",
+  qg2Status: "not-started" | "in-progress" | "approved", 
+  qg3Status: "not-started" | "in-progress" | "approved",
+  errorLogs: string[],  // Files in logs/ERROR-*.md
+  openTasks: string[],  // Files in backlog/tasks/TASK-*.md
+  blockingIssues: string[]
+}
+```
+
+**Example:**
+```typescript
+// User: "I want to implement the login API"
+const state = await get_workflow_state();
+// Returns: { phase: "requirements", qg1Status: "not-started", ... }
+// → Decision: Cannot implement without requirements, activate @requirements-engineer
+```
+
+---
+
+#### 2. `recommend_agent`
+**Purpose:** Get intelligent agent recommendation based on workflow state and user request
+
+**When to use:**
+- After getting workflow state
+- When unclear which sub-agent to activate
+- For keyword analysis and intent detection
+
+**Input:**
+```typescript
+{
+  userRequest: string,      // The user's original request
+  workflowState: object     // Result from get_workflow_state()
+}
+```
+
+**Returns:**
+```typescript
+{
+  recommendedAgent: "@requirements-engineer" | "@architect" | "@developer" | "@debugger",
+  reasoning: string,
+  priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+  blockingIssues: string[],
+  prerequisites: string[]
+}
+```
+
+**Example:**
+```typescript
+// User: "The tests are failing"
+const recommendation = await recommend_agent({
+  userRequest: "The tests are failing",
+  workflowState: state
+});
+// Returns: { 
+//   recommendedAgent: "@debugger", 
+//   priority: "CRITICAL",
+//   reasoning: "Error logs detected in logs/ - debugging takes absolute priority"
+// }
+```
+
+---
+
+#### 3. `invoke_agent` (File-Based Communication)
+**Purpose:** Delegate a task to a sub-agent via file-based queue system
+
+**When to use:**
+- After deciding which agent to activate
+- When you have a concrete, actionable task
+- After gathering all necessary context
+
+**How it works:**
+1. You call `invoke_agent` with task details
+2. MCP Server writes task file to `.mcp/queue/{agent}-{timestamp}.json`
+3. Sub-agent monitors queue, processes task when ready
+4. Sub-agent writes result to `.mcp/results/{agent}-{timestamp}.json`
+5. You read result and continue orchestration
+
+**Input:**
+```typescript
+{
+  agent: "@requirements-engineer" | "@architect" | "@developer" | "@debugger",
+  task: string,              // Clear task description
+  context: {
+    relatedFiles: string[],  // Files the agent should read
+    relatedItems: string[],  // EPICs, Features, Tasks
+    constraints: string[],   // Quality Gates, dependencies
+    expectedOutput: string   // What deliverable to create
+  },
+  priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW"
+}
+```
+
+**Returns:**
+```typescript
+{
+  success: boolean,
+  taskId: string,           // UUID for tracking
+  queueFile: string,        // Path to .mcp/queue/*.json
+  message: string
+}
+```
+
+**Example:**
+```typescript
+// After determining @requirements-engineer is needed
+const invocation = await invoke_agent({
+  agent: "@requirements-engineer",
+  task: "Define requirements for user authentication feature",
+  context: {
+    relatedFiles: ["BACKLOG.md"],
+    relatedItems: [],
+    constraints: ["Must include 2+ Gherkin scenarios", "Must validate QG1"],
+    expectedOutput: "FEATURE-XXX-user-authentication.md in requirements/features/"
+  },
+  priority: "HIGH"
+});
+// Returns: { success: true, taskId: "uuid-1234", queueFile: ".mcp/queue/requirements-engineer-20251008-1430.json" }
+
+// You then inform the user:
+// "I've delegated this to @requirements-engineer. Waiting for requirements discovery..."
+```
+
+---
+
+#### 4. `execute_workflow`
+**Purpose:** Execute a multi-step workflow with sequential agent invocations
+
+**When to use:**
+- For complex requests requiring multiple agents
+- When you know the full workflow path upfront
+- For end-to-end feature implementation
+
+**Input:**
+```typescript
+{
+  workflowName: string,
+  steps: Array<{
+    agent: string,
+    task: string,
+    context: object,
+    waitForPrevious: boolean  // Wait for previous step to complete
+  }>
+}
+```
+
+**Example:**
+```typescript
+// User: "Implement complete user authentication feature"
+await execute_workflow({
+  workflowName: "user-authentication-feature",
+  steps: [
+    {
+      agent: "@requirements-engineer",
+      task: "Define requirements for authentication",
+      waitForPrevious: false
+    },
+    {
+      agent: "@architect", 
+      task: "Design authentication architecture",
+      waitForPrevious: true  // Wait for requirements to complete
+    },
+    {
+      agent: "@developer",
+      task: "Implement authentication code",
+      waitForPrevious: true  // Wait for architecture
+    }
+  ]
+});
+```
+
+---
+
+### 🚀 TOOL-FIRST WORKFLOW (MANDATORY)
+
+**YOU MUST follow this workflow for EVERY user request:**
+
+```typescript
+// Step 1: Get workflow state (ALWAYS FIRST)
+const state = await get_workflow_state();
+
+// Step 2: Get agent recommendation
+const recommendation = await recommend_agent({
+  userRequest: userInput,
+  workflowState: state
+});
+
+// Step 3: Communicate to user
+console.log(`
+## 🎯 Task Analysis
+
+**Your Request:** ${userInput}
+
+**Current Workflow State:**
+- Phase: ${state.phase}
+- QG1: ${state.qg1Status}
+- QG2: ${state.qg2Status}
+- QG3: ${state.qg3Status}
+
+**Recommended Sub-Agent:** ${recommendation.recommendedAgent}
+
+**Reasoning:** ${recommendation.reasoning}
+`);
+
+// Step 4: Invoke agent (if prerequisites met)
+if (recommendation.prerequisites.length === 0) {
+  const result = await invoke_agent({
+    agent: recommendation.recommendedAgent,
+    task: constructTaskDescription(),
+    context: gatherContext(),
+    priority: recommendation.priority
+  });
+  
+  console.log(`Delegated to ${recommendation.recommendedAgent}. Task ID: ${result.taskId}`);
+} else {
+  console.log(`Cannot proceed. Prerequisites: ${recommendation.prerequisites.join(", ")}`);
+}
+```
+
+---
+
+### ⚠️ CRITICAL RULES FOR TOOL USAGE
+
+✅ **DO:**
+- Call `get_workflow_state()` at the START of EVERY request
+- Use `recommend_agent()` for intelligent delegation decisions
+- Use `invoke_agent()` to delegate with full context
+- Check `.mcp/results/` for completed sub-agent tasks
+- Communicate transparently about tool usage to user
+
+❌ **DON'T:**
+- Skip `get_workflow_state()` - you MUST know current phase
+- Guess which agent to use - use `recommend_agent()` instead
+- Invoke agents without gathering context first
+- Forget to check for error logs (highest priority!)
+- Delegate without explaining reasoning to user
 
 ---
 

@@ -2,9 +2,10 @@
 
 **Ein autonomes Software-Development-Workflow-System mit intelligenter Agent-Orchestrierung**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/agentic-scrum-demo)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/pssah4/agentic-scrum-copilot)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-0.5.0-orange.svg)](https://modelcontextprotocol.io/)
+[![Status](https://img.shields.io/badge/status-productive-green.svg)](https://github.com/pssah4/agentic-scrum-copilot)
 
 ---
 
@@ -367,20 +368,57 @@ npm test
 
 ## 🔍 Troubleshooting
 
+### 🚨 Quick Fix: MCP Server Not Available
+
+**Symptom:** Copilot says "tool does not exist" or "MCP server not available"
+
+**Quick Solution:**
+```bash
+# Run automated setup from project root
+./setup-mcp-server.sh
+
+# Then reload VS Code: Cmd/Ctrl + Shift + P → "Reload Window"
+```
+
+---
+
 ### Problem: MCP Server startet nicht
 
-**Lösung:**
-```bash
-# Prüfe Node Version
-node --version  # Muss >=18 sein
+**Symptoms:**
+- Tools (get_workflow_state, recommend_agent) not found
+- Orchestrator uses "Manual Orchestration Mode"
+- No automatic agent delegation
 
-# Prüfe Build
+**Solution (Automated):**
+```bash
+./setup-mcp-server.sh
+```
+
+**Solution (Manual):**
+```bash
+# Check Node Version
+node --version  # Must be >=18
+
+# Install dependencies
 cd mcp-servers/workflow-orchestrator
+npm install
+
+# Build TypeScript
 npm run build
 
-# Prüfe Logs
-cat build/index.js  # Sollte existieren
+# Verify build succeeded
+ls -la build/index.js  # Should exist
+
+# Return to root
+cd ../..
+
+# Reload VS Code
 ```
+
+**Verify MCP is Working:**
+In Copilot Chat ask: "Is the MCP server available?"
+
+---
 
 ### Problem: Agenten werden nicht aufgerufen
 
@@ -388,6 +426,9 @@ cat build/index.js  # Sollte existieren
 - Prüfe `.vscode/settings.json` Konfiguration
 - Reload VS Code Window (Cmd/Ctrl + Shift + P → "Reload Window")
 - Prüfe VS Code Output Panel → "GitHub Copilot"
+- Manual activation: `@requirements-engineer [your request]`
+
+---
 
 ### Problem: Quality Gates werden übersprungen
 
@@ -395,6 +436,22 @@ cat build/index.js  # Sollte existieren
 - Setze `QG_STRICT_MODE=true` in `.env`
 - Prüfe `.github/instructions/*.instructions.md` Files
 - Validiere BACKLOG.md und ARC42-DOCUMENTATION.md Format
+- Check for "QG1: ✅ APPROVED" in BACKLOG.md
+- Check for "QG2: ✅ APPROVED" in ARC42-DOCUMENTATION.md
+
+---
+
+### Full System Diagnostic
+
+Run this command to check everything:
+```bash
+echo "=== MCP Server ===" && \
+ls -la mcp-servers/workflow-orchestrator/build/index.js && \
+echo -e "\n=== Chatmodes ===" && \
+ls -la .github/chatmodes/ && \
+echo -e "\n=== Workflow Files ===" && \
+ls -la BACKLOG.md ARC42-DOCUMENTATION.md 2>/dev/null || echo "Workflow files not created yet"
+```
 
 ---
 

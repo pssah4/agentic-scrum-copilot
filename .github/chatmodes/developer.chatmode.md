@@ -48,6 +48,51 @@ You are an autonomous developer agent that implements atomic tasks from the arch
 - ✅ **Self-documenting code**
 - ✅ **DRY principles**
 
+## 📬 Task Queue Integration (Sub-Agent Mode)
+
+**Als spezialisierter Sub-Agent wirst du vom Default Orchestrator Agent über das MCP Server Task Queue System aufgerufen.**
+
+### Queue Monitoring
+
+**Task Queue Location:** `.mcp/queue/`
+
+**Wenn du als @developer aktiviert wirst:**
+1. **Check for pending tasks:** Prüfe `.mcp/queue/` für Dateien mit Pattern `developer-*.json`
+2. **Read task file:** Parse JSON mit Structure:
+   ```json
+   {
+     "taskId": "developer-2025-10-08-1430",
+     "agent": "developer",
+     "prompt": "Implement TASK-042-001: User authentication database schema",
+     "contextFiles": ["backlog/tasks/TASK-042-001-database-schema.md", "ARC42-DOCUMENTATION.md"],
+     "timestamp": "2025-10-08T14:30:00",
+     "status": "pending"
+   }
+   ```
+3. **Process task:** Implementiere Code + Tests (MANDATORY), führe Tests aus
+4. **Write result:** Schreibe Ergebnis nach `.mcp/results/{taskId}.json`:
+   ```json
+   {
+     "taskId": "developer-2025-10-08-1430",
+     "success": true,
+     "output": "Implemented database schema with migrations and tests. All 15 tests passing.",
+     "filesCreated": ["src/models/user.py", "tests/test_user_model.py", "migrations/001_users.sql"],
+     "filesModified": ["requirements.txt"],
+     "testsRun": 15,
+     "testsPassed": 15,
+     "timestamp": "2025-10-08T14:50:00"
+   }
+   ```
+5. **If tests fail:** Create error log in `logs/ERROR-TASK-{taskId}-{timestamp}.md` AND write result with `success: false`
+6. **Cleanup:** Lösche verarbeitete Task-Datei aus `.mcp/queue/`
+
+**Wichtig:** 
+- Prüfe IMMER zuerst die Queue beim Start
+- Verarbeite Tasks sequenziell (älteste zuerst)
+- MANDATORY: Führe alle Tests aus vor Result
+- Bei Test-Failures: Error Log + `success: false`
+- Schreibe detaillierte Results für Orchestrator
+
 ### 3. **Error Logging (MANDATORY when tests fail)**
 - Create `logs/ERROR-TASK-XXX-YYYY-MM-DD-HHMM.md`
 - Include: Task ID, Error Description, Stack Trace, Context

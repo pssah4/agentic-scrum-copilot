@@ -27,6 +27,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import * as fs from "fs";
 import * as path from "path";
+import { ChatmodeExecutor } from "./chatmode-executor.js";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -103,9 +104,11 @@ interface AgentInvocationResult {
  */
 class WorkflowOrchestrator {
   private workspaceRoot: string;
+  private chatmodeExecutor: ChatmodeExecutor;
 
   constructor(workspaceRoot: string) {
     this.workspaceRoot = workspaceRoot;
+    this.chatmodeExecutor = new ChatmodeExecutor(workspaceRoot);
     console.error(`[Orchestrator] Initialized with workspace: ${workspaceRoot}`);
   }
 
@@ -452,9 +455,13 @@ class WorkflowOrchestrator {
     fs.mkdirSync(queueDir, { recursive: true });
     fs.mkdirSync(resultsDir, { recursive: true });
 
+    // Generate unique task ID
+    const taskId = `${agent}-${timestamp}`;
+    
     // Task-File für Agent erstellen
-    const taskFile = path.join(queueDir, `${agent}-${timestamp}.json`);
+    const taskFile = path.join(queueDir, `${taskId}.json`);
     const task = {
+      taskId,
       agent,
       prompt,
       contextFiles,
@@ -462,30 +469,69 @@ class WorkflowOrchestrator {
       status: "pending"
     };
     fs.writeFileSync(taskFile, JSON.stringify(task, null, 2));
-    console.error(`[Orchestrator] ✅ Task written to: ${taskFile}`);
+    console.error(`[Orchestrator] ✅ Task written to queue: ${taskFile}`);
+    console.error(`[Orchestrator] 📋 Task ID: ${taskId}`);
+    console.error(`[Orchestrator] � Now executing chatmode @${agent}...`);
 
-    // HIER WÜRDE DER EIGENTLICHE AGENT-AUFRUF PASSIEREN
-    // Da VS Code API Limitierungen bestehen, simulieren wir zunächst:
-    console.error(`[Orchestrator] ⚠️  Simulated agent call (VS Code API integration pending)`);
-    console.error(`[Orchestrator] 💡 Manual: Activate @${agent} in VS Code and process task`);
+    // ========================================================================
+    // NEW: IMMEDIATE CHATMODE EXECUTION via ChatmodeExecutor
+    // ========================================================================
+    try {
+      const executionResult = await this.chatmodeExecutor.executeTask(task);
+      
+      // Write result to .mcp/results/
+      const resultFile = path.join(resultsDir, `${taskId}.json`);
+      fs.writeFileSync(resultFile, JSON.stringify(executionResult, null, 2));
+      console.error(`[Orchestrator] ✅ Result written: ${resultFile}`);
+      
+      // Return immediate result
+      return {
+        agent,
+        success: executionResult.status === "completed",
+        output: executionResult.output,
+        filesCreated: executionResult.filesCreated,
+        filesModified: executionResult.filesModified,
+        duration: Date.now() - startTime,
+        error: executionResult.error
+      };
+    } catch (executionError) {
+      console.error(`[Orchestrator] ❌ Chatmode execution failed:`, executionError);
+      
+      // Write error result
+      const errorResult = {
+        taskId,
+        agent,
+        status: "failed",
+        output: "",
+        filesCreated: [],
+        filesModified: [],
+        summary: "Chatmode execution failed",
+        qualityGateStatus: { validationErrors: [String(executionError)] },
+        nextSteps: ["Review error and retry"],
+        completedAt: new Date().toISOString(),
+        error: executionError instanceof Error ? executionError.message : String(executionError)
+      };
+      
+      const resultFile = path.join(resultsDir, `${taskId}.json`);
+      fs.writeFileSync(resultFile, JSON.stringify(errorResult, null, 2));
+      
+      return {
+        agent,
+        success: false,
+        output: "",
+        filesCreated: [],
+        filesModified: [],
+        duration: Date.now() - startTime,
+        error: executionError instanceof Error ? executionError.message : String(executionError)
+      };
+    }
 
-    // Simuliertes Ergebnis (in echter Implementation: warten auf Result-File)
-    const result: AgentInvocationResult = {
-      agent,
-      success: true,
-      output: `[Simulated] Agent @${agent} would process:\n\n${prompt}\n\nContext: ${contextFiles.join(", ")}`,
-      filesCreated: [],
-      filesModified: [],
-      duration: Date.now() - startTime,
-    };
+    // ========================================================================
+    // OLD: File-Based Polling (Kept as fallback, but not used now)
+    // ========================================================================
 
-    // In echter Implementation:
-    // - Warte auf Result-File in .mcp/results/
-    // - Timeout nach 5 Minuten
-    // - Parse Result und return
-
-    console.error(`[Orchestrator] ✅ Agent invocation completed in ${result.duration}ms`);
-    return result;
+    // NOTE: Old polling code removed - we now execute immediately above
+    // If immediate execution fails, the error is already handled and returned
   }
 
   // ==========================================================================
