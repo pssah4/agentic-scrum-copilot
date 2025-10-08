@@ -1,0 +1,41 @@
+{
+  "name": "workflow-orchestrator-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for intelligent multi-agent workflow orchestration - invokes GitHub Copilot chatmode sub-agents and collects results",
+  "type": "module",
+  "main": "./build/index.js",
+  "bin": {
+    "workflow-orchestrator": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x build/index.js",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "start": "node build/index.js",
+    "dev": "tsc --watch & node --watch build/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "workflow",
+    "orchestration",
+    "multi-agent",
+    "github-copilot",
+    "chatmode",
+    "sub-agent",
+    "vscode",
+    "autonomous-development"
+  ],
+  "author": "Sebastian Hanke",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
