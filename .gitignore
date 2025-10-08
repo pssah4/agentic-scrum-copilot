@@ -36,7 +36,12 @@ dist/
 # ============================================================================
 # IDE & Editor
 # ============================================================================
-.vscode/
+# Allow VS Code settings and extensions for MCP Server integration
+!.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
 .idea/
 *.swp
 *.swo

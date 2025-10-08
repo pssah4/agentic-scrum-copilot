@@ -1,0 +1,23 @@
+{
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": ".github/copilot-instructions.md"
+    }
+  ],
+  "github.copilot.chat.mcpServers": {
+    "workflow-orchestrator": {
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/mcp-servers/workflow-orchestrator/build/index.js"
+      ],
+      "env": {
+        "WORKSPACE_ROOT": "${workspaceFolder}",
+        "MCP_LOG_LEVEL": "info",
+        "AGENT_TIMEOUT": "300000",
+        "QG_STRICT_MODE": "true",
+        "RESULT_POLL_INTERVAL": "1000",
+        "RESULT_POLL_TIMEOUT": "300000"
+      }
+    }
+  }
+}
